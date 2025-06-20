@@ -1,4 +1,5 @@
 // models/ProductImage.js
+
 module.exports = (sequelize, DataTypes) => {
   const ProductImage = sequelize.define("ProductImage", {
     imageUrl: {
@@ -12,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   ProductImage.associate = (models) => {
-    ProductImage.belongsTo(models.products, {
+    ProductImage.belongsTo(models.Product, {
       foreignKey: "productId",
       onDelete: "CASCADE",
     });

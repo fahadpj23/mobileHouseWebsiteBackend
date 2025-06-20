@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const product = sequelize.define("products", {
+  const Product = sequelize.define("Product", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -63,11 +63,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    imageUrl: {
-      // Store the path or URL to the image
-      type: DataTypes.STRING,
-      allowNull: true, // Can be null if no image is uploaded
-    },
   });
-  return product;
+  Product.associate = (models) => {
+    Product.hasMany(models.ProductImage, {
+      foreignKey: "productId",
+      as: "images",
+      onDelete: "CASCADE",
+    });
+  };
+  return Product;
 };

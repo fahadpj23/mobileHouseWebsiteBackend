@@ -28,8 +28,14 @@ const db = {};
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.products = require("./productModel.js")(sequelize, DataTypes);
-db.productImages = require("./productImage.js")(sequelize, DataTypes);
+db.Product = require("./productModel.js")(sequelize, DataTypes);
+db.ProductImage = require("./productImageModel.js")(sequelize, DataTypes);
+
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db); // This ensures all associations are set up
+  }
+});
 
 db.sequelize.sync({ alter: true }).then(() => {
   console.log("sync done");

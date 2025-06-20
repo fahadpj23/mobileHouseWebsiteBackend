@@ -12,11 +12,17 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const Product = db.products;
+const Product = db.Product;
+const ProductImage = db.ProductImage;
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.findAll({
+      include: {
+        model: ProductImage,
+        as: "images",
+      },
+    });
     res.json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -34,10 +40,9 @@ exports.getProductById = async (req, res) => {
 };
 
 exports.addProduct = async (req, res) => {
-  console.log("Dsdsd");
   try {
     const {
-      name,
+      productName,
       ram,
       storage,
       price,
@@ -53,15 +58,9 @@ exports.addProduct = async (req, res) => {
       processor,
       battery,
     } = req.body;
-    let imageUrl = null;
-    console.log(req.file);
-    if (req.file) {
-      // Construct the URL to access the image from the frontend
-      // Assuming your server runs on localhost:5000 and static files are served from /uploads
-      imageUrl = `/uploads/${req.file.filename}`;
-    }
+
     const newProduct = await Product.create({
-      name,
+      productName,
       ram,
       storage,
       price,
@@ -76,9 +75,32 @@ exports.addProduct = async (req, res) => {
       os,
       processor,
       battery,
-      imageUrl,
     });
-    res.status(201).json(newProduct);
+
+    try {
+      const images = req.files;
+
+      if (!images || images.length === 0) {
+        return res
+          .status(400)
+          .json({ error: "At least one image is required" });
+      }
+
+      // Create product images
+      const productImage = await Promise.all(
+        images.map((file, index) =>
+          db.ProductImage.create({
+            imageUrl: `/uploads/${file.filename}`,
+            isMain: index === 0, // Set first image as main by default
+            productId: newProduct.id,
+          })
+        )
+      );
+      res.status(201).json(newProduct);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -86,11 +108,11 @@ exports.addProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
-    const { name, ram, storage } = req.body;
+    const { productName, ram, storage } = req.body;
     const product = await Product.findByPk(req.params.id);
     if (!product) return res.status(404).json({ error: "Product not found" });
 
-    product.name = name || product.name;
+    product.productName = productName || product.productName;
     product.ram = ram || product.ram;
     product.storage = storage || product.storage;
     await product.save();
