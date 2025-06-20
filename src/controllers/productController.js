@@ -34,7 +34,7 @@ exports.getProductById = async (req, res) => {
 };
 
 exports.addProduct = async (req, res) => {
-  console.log(req.body);
+  console.log("Dsdsd");
   try {
     const {
       name,

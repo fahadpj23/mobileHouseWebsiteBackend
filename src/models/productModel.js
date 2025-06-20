@@ -1,11 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
-  const productValue = sequelize.define("products", {
+  const product = sequelize.define("products", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    name: {
+    productName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -69,5 +69,5 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true, // Can be null if no image is uploaded
     },
   });
-  return productValue;
+  return product;
 };

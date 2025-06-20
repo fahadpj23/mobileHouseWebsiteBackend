@@ -29,6 +29,7 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.products = require("./productModel.js")(sequelize, DataTypes);
+db.productImages = require("./productImage.js")(sequelize, DataTypes);
 
 db.sequelize.sync({ alter: true }).then(() => {
   console.log("sync done");
