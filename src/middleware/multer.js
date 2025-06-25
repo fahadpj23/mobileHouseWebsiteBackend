@@ -4,11 +4,11 @@ const fs = require("fs");
 
 // Ensure upload directories exist
 const uploadDirs = [
-  "uploads/banners",
-  "uploads/products",
-  "uploads/whatsapp-ads",
-  "uploads/newArrival",
-  "uploads/justLaunched",
+  "src/uploads/banners",
+  "src/uploads/products",
+  "src/uploads/whatsapp-ads",
+  "src/uploads/newArrival",
+  "src/uploads/justLaunched",
 ];
 
 uploadDirs.forEach((dir) => {
@@ -21,7 +21,7 @@ uploadDirs.forEach((dir) => {
 const storageConfigs = {
   banner: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "uploads/banners");
+      cb(null, "src/uploads/banners");
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
@@ -31,7 +31,7 @@ const storageConfigs = {
 
   productMain: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "uploads/products");
+      cb(null, "src/uploads/products");
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
@@ -44,7 +44,7 @@ const storageConfigs = {
 
   whatsappAd: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "uploads/whatsapp-ads");
+      cb(null, "src/uploads/whatsapp-ads");
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
@@ -54,7 +54,7 @@ const storageConfigs = {
 
   newArrival: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "uploads/newArrival");
+      cb(null, "src/uploads/newArrival");
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
@@ -63,7 +63,7 @@ const storageConfigs = {
   }),
   justLaunched: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "uploads/justLaunched");
+      cb(null, "src/uploads/justLaunched");
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
