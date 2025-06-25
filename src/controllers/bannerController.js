@@ -13,11 +13,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const Banner = db.Banner;
-const BannerImage = db.BannerImage;
 
 exports.getAllBanner = async (req, res) => {
   try {
-    const Banner = await Banner.findAll();
+    const Banner = await db.Banner.findAll();
     res.json(Banner);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -26,7 +25,7 @@ exports.getAllBanner = async (req, res) => {
 
 exports.getBannerById = async (req, res) => {
   try {
-    const Banner = await Banner.findByPk(req.params.id, {
+    const Banner = await db.Banner.findByPk(req.params.id, {
       include: {
         model: BannerImage,
         as: "images",
@@ -50,7 +49,7 @@ exports.addBanner = async (req, res) => {
     // Create Banner images
     const BannerImage = await Promise.all(
       images.map((file, index) =>
-        db.BannerImage.create({
+        db.Banner.create({
           imageUrl: `/uploads/${file.filename}`,
         })
       )
