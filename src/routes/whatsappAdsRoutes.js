@@ -1,5 +1,5 @@
 const express = require("express");
-const upload = require("../middleware/multer");
+const { uploadWhatsappAds } = require("../middleware/multer");
 
 const router = express.Router();
 const {
@@ -12,7 +12,7 @@ const {
 
 router.get("/", getAllWhatsappAds);
 router.get("/:id", getWhatsappAdsById);
-router.post("/", upload.array("images", 5), addWhatsappAds);
+router.post("/", uploadWhatsappAds, addWhatsappAds);
 router.put("/:id", updateWhatsappAds);
 router.delete("/:id", deleteWhatsappAds);
 

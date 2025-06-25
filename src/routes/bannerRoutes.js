@@ -1,7 +1,6 @@
 const express = require("express");
-const upload = require("../middleware/multer");
-
 const router = express.Router();
+const { uploadBanner } = require("../middleware/multer");
 const {
   getAllBanner,
   getBannerById,
@@ -12,7 +11,7 @@ const {
 
 router.get("/", getAllBanner);
 router.get("/:id", getBannerById);
-router.post("/", upload.array("images", 5), addBanner);
+router.post("/", uploadBanner, addBanner);
 router.put("/:id", updateBanner);
 router.delete("/:id", deleteBanner);
 

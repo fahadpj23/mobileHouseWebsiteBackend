@@ -1,5 +1,5 @@
 const express = require("express");
-const upload = require("../middleware/multer");
+const { uploadProductImages } = require("../middleware/multer");
 
 const router = express.Router();
 const {
@@ -12,7 +12,7 @@ const {
 
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
-router.post("/", upload.array("images", 5), addProduct);
+router.post("/", uploadProductImages, addProduct);
 router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);
 

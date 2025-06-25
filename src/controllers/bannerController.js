@@ -1,16 +1,4 @@
 const db = require("../models");
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Images will be stored in the 'uploads' directory
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname); // Unique filename
-  },
-});
-
-const upload = multer({ storage: storage });
 
 const Banner = db.Banner;
 
@@ -50,7 +38,7 @@ exports.addBanner = async (req, res) => {
     const BannerImage = await Promise.all(
       images.map((file, index) =>
         db.Banner.create({
-          imageUrl: `/uploads/${file.filename}`,
+          imageUrl: `/uploads/banners/${file.filename}`,
         })
       )
     );

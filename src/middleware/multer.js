@@ -1,51 +1,103 @@
-// middleware/upload.js
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Ensure upload directories exist
+const uploadDirs = [
+  "uploads/banners",
+  "uploads/products",
+  "uploads/whatsapp-ads",
+  "uploads/newArrival",
+  "uploads/justLaunched",
+];
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
-  },
+uploadDirs.forEach((dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 });
 
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = [
-    "image/jpeg",
-    "image/webp",
-    "image/png",
-    "application/pdf",
-    "text/plain",
-    "text/jpg",
-  ];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(
-      new Error(
-        "Invalid file type. Only JPEG, PNG, PDF, and TXT files are allowed."
-      )
-    );
-  }
+// Storage configurations
+const storageConfigs = {
+  banner: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/banners");
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
+      cb(null, "banner-" + uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
+
+  productMain: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/products");
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
+      cb(
+        null,
+        "product-main-" + uniqueSuffix + path.extname(file.originalname)
+      );
+    },
+  }),
+
+  whatsappAd: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/whatsapp-ads");
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
+      cb(null, "whatsapp-ad-" + uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
+
+  newArrival: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/newArrival");
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
+      cb(null, "newArrival" + uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
+  justLaunched: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/justLaunched");
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
+      cb(null, "justLaunched" + uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
 };
 
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5, // 5MB limit
-  },
-  fileFilter,
-});
+// Middleware for multiple product images
+const uploadProductImages = multer({
+  storage: storageConfigs.productMain,
+}).array("images", 6); // Allow up to 6 images
 
-module.exports = upload;
+const uploadBanner = multer({
+  storage: storageConfigs.banner,
+}).array("images", 10);
+
+const uploadWhatsappAds = multer({
+  storage: storageConfigs.whatsappAd,
+}).array("images", 10);
+
+const uploadNewArrival = multer({
+  storage: storageConfigs.newArrival,
+}).array("images", 10);
+
+const uploadJustLaunched = multer({
+  storage: storageConfigs.justLaunched,
+}).array("images", 10);
+
+// Export middleware functions
+module.exports = {
+  uploadBanner,
+  uploadProductImages,
+  uploadWhatsappAds,
+  uploadNewArrival,
+  uploadJustLaunched,
+};
