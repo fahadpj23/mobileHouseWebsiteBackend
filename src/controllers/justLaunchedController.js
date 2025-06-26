@@ -48,17 +48,16 @@ exports.addJustLaunched = async (req, res) => {
       return res.status(400).json({ error: "At least one image is required" });
     }
 
-    // Create JustLaunched images
-    const JustLaunchedImage = await Promise.all(
+    // Create NewArrival images
+    const JustLaunched = await Promise.all(
       images.map((file, index) =>
-        db.JustLaunchedImage.create({
-          imageUrl: `/uploads/${file.filename}`,
+        db.JustLaunched.create({
+          imageUrl: `/uploads/justLaunched/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
-          JustLaunchedId: newJustLaunched.id,
         })
       )
     );
-    res.status(201).json(newJustLaunched);
+    res.status(201).json(JustLaunched);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });

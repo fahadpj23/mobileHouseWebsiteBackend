@@ -1,23 +1,8 @@
 const db = require("../models");
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Images will be stored in the 'uploads' directory
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname); // Unique filename
-  },
-});
-
-const upload = multer({ storage: storage });
-
-const WhatsappAds = db.WhatsappAds;
-const WhatsappAdsImage = db.WhatsappAdsImage;
 
 exports.getAllWhatsappAds = async (req, res) => {
   try {
-    const WhatsappAds = await WhatsappAds.findAll();
+    const WhatsappAds = await db.whatsappAds.findAll();
     res.json(WhatsappAds);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -49,12 +34,11 @@ exports.addWhatsappAds = async (req, res) => {
     }
 
     // Create WhatsappAds images
-    const WhatsappAdsImage = await Promise.all(
+    const newWhatsappAds = await Promise.all(
       images.map((file, index) =>
-        db.WhatsappAdsImage.create({
-          imageUrl: `/uploads/${file.filename}`,
+        db.whatsappAds.create({
+          imageUrl: `/uploads/whatsappAds/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
-          WhatsappAdsId: newWhatsappAds.id,
         })
       )
     );

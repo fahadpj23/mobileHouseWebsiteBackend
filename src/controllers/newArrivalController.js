@@ -49,16 +49,15 @@ exports.addNewArrival = async (req, res) => {
     }
 
     // Create NewArrival images
-    const NewArrivalImage = await Promise.all(
+    const newArrival = await Promise.all(
       images.map((file, index) =>
-        db.NewArrivalImage.create({
-          imageUrl: `/uploads/${file.filename}`,
+        db.NewArrival.create({
+          imageUrl: `/uploads/newArrival/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
-          NewArrivalId: newNewArrival.id,
         })
       )
     );
-    res.status(201).json(newNewArrival);
+    res.status(201).json(newArrival);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });

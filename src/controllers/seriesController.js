@@ -1,7 +1,5 @@
 const db = require("../models");
 
-const Series = db.Series;
-
 exports.getAllSeries = async (req, res) => {
   try {
     const Series = await db.series.findAll();
