@@ -34,6 +34,7 @@ db.Banner = require("./bannerModel.js")(sequelize, DataTypes);
 db.NewArrival = require("./newArrivalModel.js")(sequelize, DataTypes);
 db.JustLaunched = require("./justLaunchedModel.js")(sequelize, DataTypes);
 db.whatsappAds = require("./whatsappAdsModel.js")(sequelize, DataTypes);
+db.series = require("./seriesModel.js")(sequelize, DataTypes);
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {

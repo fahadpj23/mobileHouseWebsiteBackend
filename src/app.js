@@ -8,6 +8,7 @@ const bannerRoutes = require("./routes/bannerRoutes");
 const newArrivalRoutes = require("./routes/newArrivalRoutes");
 const justLaunchedRoutes = require("./routes/justLaunchedRoutes");
 const whatsappAdsRoutes = require("./routes/whatsappAdsRoutes");
+const seriesRoutes = require("./routes/seriesRoutes");
 
 app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true }));
@@ -30,6 +31,7 @@ app.use("/api/banner", bannerRoutes);
 app.use("/api/newArrival", newArrivalRoutes);
 app.use("/api/justLaunched", justLaunchedRoutes);
 app.use("/api/whatsappAds", whatsappAdsRoutes);
+app.use("/api/series", seriesRoutes);
 
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
