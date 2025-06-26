@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    series: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   });
 
   return NewArrival;

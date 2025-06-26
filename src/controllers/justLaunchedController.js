@@ -42,6 +42,8 @@ exports.getJustLaunchedById = async (req, res) => {
 
 exports.addJustLaunched = async (req, res) => {
   try {
+    const { series } = req.body;
+
     const images = req.files;
 
     if (!images || images.length === 0) {
@@ -52,6 +54,7 @@ exports.addJustLaunched = async (req, res) => {
     const JustLaunched = await Promise.all(
       images.map((file, index) =>
         db.JustLaunched.create({
+          series: series,
           imageUrl: `/uploads/justLaunched/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
         })

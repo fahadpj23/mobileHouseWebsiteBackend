@@ -27,6 +27,8 @@ exports.getWhatsappAdsById = async (req, res) => {
 
 exports.addWhatsappAds = async (req, res) => {
   try {
+    const { series } = req.body;
+
     const images = req.files;
 
     if (!images || images.length === 0) {
@@ -37,6 +39,7 @@ exports.addWhatsappAds = async (req, res) => {
     const newWhatsappAds = await Promise.all(
       images.map((file, index) =>
         db.whatsappAds.create({
+          series: series,
           imageUrl: `/uploads/whatsappAds/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
         })
