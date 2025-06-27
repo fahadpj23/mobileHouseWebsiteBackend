@@ -4,8 +4,26 @@ const Banner = db.Banner;
 
 exports.getAllBanner = async (req, res) => {
   try {
-    const Banner = await db.Banner.findAll();
-    res.json(Banner);
+    const Banner = await db.Banner.findAll({
+      include: [
+        {
+          model: db.Series,
+          as: "series",
+          attributes: ["seriesName"],
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+
+    const result =
+      Array.isArray(Banner) &&
+      Banner.map((item) => ({
+        ...item,
+        series: item.series.seriesName, // Replace nested object with just the name
+      }));
+
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -40,7 +58,7 @@ exports.addBanner = async (req, res) => {
     const BannerImage = await Promise.all(
       images.map((file, index) =>
         db.Banner.create({
-          series: series,
+          seriesId: series,
           imageUrl: `/uploads/banners/${file.filename}`,
         })
       )

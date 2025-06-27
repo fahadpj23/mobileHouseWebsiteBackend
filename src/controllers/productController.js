@@ -71,7 +71,7 @@ exports.addProduct = async (req, res) => {
       price,
       mrp,
       brand,
-      series,
+      seriesId: series,
       networkType,
       category,
       display,

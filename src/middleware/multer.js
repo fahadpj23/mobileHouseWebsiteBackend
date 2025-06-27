@@ -6,7 +6,7 @@ const fs = require("fs");
 const uploadDirs = [
   "src/uploads/banners",
   "src/uploads/products",
-  "src/uploads/whatsapp-ads",
+  "src/uploads/whatsappAds",
   "src/uploads/newArrival",
   "src/uploads/justLaunched",
 ];
@@ -44,7 +44,7 @@ const storageConfigs = {
 
   whatsappAd: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "src/uploads/whatsapp-ads");
+      cb(null, "src/uploads/whatsappAds");
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);

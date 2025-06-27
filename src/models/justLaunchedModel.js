@@ -11,11 +11,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    series: {
+    seriesId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
   });
+  JustLaunched.associate = (models) => {
+    JustLaunched.belongsTo(models.Series, {
+      foreignKey: "seriesId",
+      as: "series",
+      onDelete: "CASCADE",
+    });
+  };
 
   return JustLaunched;
 };

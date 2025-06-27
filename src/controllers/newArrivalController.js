@@ -1,24 +1,27 @@
 const db = require("../models");
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Images will be stored in the 'uploads' directory
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname); // Unique filename
-  },
-});
-
-const upload = multer({ storage: storage });
-
-const NewArrival = db.NewArrival;
-const NewArrivalImage = db.NewArrivalImage;
 
 exports.getAllNewArrivals = async (req, res) => {
   try {
-    const NewArrival = await NewArrival.findAll();
-    res.json(NewArrival);
+    const NewArrival = await db.NewArrival.findAll({
+      include: [
+        {
+          model: db.Series,
+          as: "series",
+          attributes: ["seriesName"],
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+
+    const result =
+      Array.isArray(NewArrival) &&
+      NewArrival.map((item) => ({
+        ...item,
+        series: item.series.seriesName, // Replace nested object with just the name
+      }));
+
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -26,7 +29,7 @@ exports.getAllNewArrivals = async (req, res) => {
 
 exports.getNewArrivalById = async (req, res) => {
   try {
-    const NewArrival = await NewArrival.findByPk(req.params.id, {
+    const NewArrival = await db.NewArrival.findByPk(req.params.id, {
       include: {
         model: NewArrivalImage,
         as: "images",
@@ -55,7 +58,7 @@ exports.addNewArrival = async (req, res) => {
       images.map((file, index) =>
         db.NewArrival.create({
           imageUrl: `/uploads/newArrival/${file.filename}`,
-          series: series,
+          seriesId: series,
           isMain: index === 0, // Set first image as main by default
         })
       )
@@ -70,7 +73,7 @@ exports.addNewArrival = async (req, res) => {
 exports.updateNewArrival = async (req, res) => {
   try {
     const { NewArrivalName, ram, storage } = req.body;
-    const NewArrival = await NewArrival.findByPk(req.params.id);
+    const NewArrival = await db.NewArrival.findByPk(req.params.id);
     if (!NewArrival)
       return res.status(404).json({ error: "NewArrival not found" });
 
@@ -87,7 +90,7 @@ exports.updateNewArrival = async (req, res) => {
 
 exports.deleteNewArrival = async (req, res) => {
   try {
-    const NewArrival = await NewArrival.findByPk(req.params.id);
+    const NewArrival = await db.NewArrival.findByPk(req.params.id);
     if (!NewArrival)
       return res.status(404).json({ error: "NewArrival not found" });
 

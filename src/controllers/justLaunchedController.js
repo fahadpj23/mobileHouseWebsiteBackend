@@ -1,11 +1,27 @@
 const db = require("../models");
-const multer = require("multer");
-// const upload = multer({ storage: storage });
 
 exports.getAllJustLaunched = async (req, res) => {
   try {
-    const JustLaunched = await db.JustLaunched.findAll();
-    res.json(JustLaunched);
+    const JustLaunched = await db.JustLaunched.findAll({
+      include: [
+        {
+          model: db.Series,
+          as: "series",
+          attributes: ["seriesName"],
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+
+    const result =
+      Array.isArray(JustLaunched) &&
+      JustLaunched.map((item) => ({
+        ...item,
+        series: item.series.seriesName, // Replace nested object with just the name
+      }));
+
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -37,11 +53,11 @@ exports.addJustLaunched = async (req, res) => {
       return res.status(400).json({ error: "At least one image is required" });
     }
 
-    // Create NewArrival images
+    // Create JustLaunched images
     const JustLaunched = await Promise.all(
       images.map((file, index) =>
         db.JustLaunched.create({
-          series: series,
+          seriesId: series,
           imageUrl: `/uploads/justLaunched/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
         })

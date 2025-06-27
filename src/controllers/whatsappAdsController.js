@@ -1,9 +1,28 @@
 const db = require("../models");
+const removeTablePrefixes = "../../utils/tablePrefixRemove.js";
 
 exports.getAllWhatsappAds = async (req, res) => {
   try {
-    const WhatsappAds = await db.whatsappAds.findAll();
-    res.json(WhatsappAds);
+    const WhatsappAds = await db.WhatsappAds.findAll({
+      include: [
+        {
+          model: db.Series,
+          as: "series",
+          attributes: ["seriesName"],
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+
+    const result =
+      Array.isArray(WhatsappAds) &&
+      WhatsappAds.map((item) => ({
+        ...item,
+        series: item.series.seriesName, // Replace nested object with just the name
+      }));
+
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -39,7 +58,7 @@ exports.addWhatsappAds = async (req, res) => {
     const newWhatsappAds = await Promise.all(
       images.map((file, index) =>
         db.whatsappAds.create({
-          series: series,
+          seriesId: series,
           imageUrl: `/uploads/whatsappAds/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
         })

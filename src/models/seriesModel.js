@@ -10,6 +10,34 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   });
+  Series.associate = (models) => {
+    Series.hasMany(models.WhatsappAds, {
+      foreignKey: "seriesId",
+      as: "series",
+      onDelete: "CASCADE",
+    });
+  };
+  Series.associate = (models) => {
+    Series.hasMany(models.NewArrival, {
+      foreignKey: "seriesId",
+      as: "series",
+      onDelete: "CASCADE",
+    });
+  };
+  Series.associate = (models) => {
+    Series.hasMany(models.JustLaunched, {
+      foreignKey: "seriesId",
+      as: "series",
+      onDelete: "CASCADE",
+    });
+  };
+  Series.associate = (models) => {
+    Series.hasMany(models.Banner, {
+      foreignKey: "seriesId",
+      as: "series",
+      onDelete: "CASCADE",
+    });
+  };
 
   return Series;
 };

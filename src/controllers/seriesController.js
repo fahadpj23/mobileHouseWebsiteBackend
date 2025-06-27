@@ -2,7 +2,7 @@ const db = require("../models");
 
 exports.getAllSeries = async (req, res) => {
   try {
-    const Series = await db.series.findAll();
+    const Series = await db.Series.findAll();
     res.json(Series);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -11,7 +11,7 @@ exports.getAllSeries = async (req, res) => {
 
 exports.getSeriesById = async (req, res) => {
   try {
-    const Series = await db.series.findByPk(req.params.id, {
+    const Series = await db.Series.findByPk(req.params.id, {
       include: {
         model: SeriesImage,
         as: "images",
@@ -28,7 +28,7 @@ exports.addSeries = async (req, res) => {
   try {
     const { seriesName } = req.body;
 
-    const newProduct = await db.series.create({
+    const newProduct = await db.Series.create({
       seriesName,
     });
     res.status(201).json(newProduct);

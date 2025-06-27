@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    series: {
+    seriesId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
