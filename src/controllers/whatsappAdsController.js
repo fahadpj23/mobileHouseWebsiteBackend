@@ -57,7 +57,7 @@ exports.addWhatsappAds = async (req, res) => {
     // Create WhatsappAds images
     const newWhatsappAds = await Promise.all(
       images.map((file, index) =>
-        db.whatsappAds.create({
+        db.WhatsappAds.create({
           seriesId: series,
           imageUrl: `/uploads/whatsappAds/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
