@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
   Series.associate = (models) => {
-    Series.hasMany(models.JustLaunched, {
+    Series.hasMany(models.Upcoming, {
       foreignKey: "seriesId",
       as: "series",
       onDelete: "CASCADE",

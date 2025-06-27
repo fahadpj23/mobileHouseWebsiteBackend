@@ -32,7 +32,7 @@ db.Product = require("./productModel.js")(sequelize, DataTypes);
 db.ProductImage = require("./productImageModel.js")(sequelize, DataTypes);
 db.Banner = require("./bannerModel.js")(sequelize, DataTypes);
 db.NewArrival = require("./newArrivalModel.js")(sequelize, DataTypes);
-db.JustLaunched = require("./justLaunchedModel.js")(sequelize, DataTypes);
+db.Upcoming = require("./upcomingModel.js")(sequelize, DataTypes);
 db.WhatsappAds = require("./whatsappAdsModel.js")(sequelize, DataTypes);
 db.Series = require("./seriesModel.js")(sequelize, DataTypes);
 

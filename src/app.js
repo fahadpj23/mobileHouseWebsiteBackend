@@ -6,7 +6,7 @@ const path = require("path");
 const productRoutes = require("./routes/productRoutes");
 const bannerRoutes = require("./routes/bannerRoutes");
 const newArrivalRoutes = require("./routes/newArrivalRoutes");
-const justLaunchedRoutes = require("./routes/justLaunchedRoutes");
+const upcomingRoutes = require("./routes/upcomingRoutes");
 const whatsappAdsRoutes = require("./routes/whatsappAdsRoutes");
 const seriesRoutes = require("./routes/seriesRoutes");
 
@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 app.use("/api/products", productRoutes);
 app.use("/api/banner", bannerRoutes);
 app.use("/api/newArrival", newArrivalRoutes);
-app.use("/api/justLaunched", justLaunchedRoutes);
+app.use("/api/upcoming", upcomingRoutes);
 app.use("/api/whatsappAds", whatsappAdsRoutes);
 app.use("/api/series", seriesRoutes);
 

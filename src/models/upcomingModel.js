@@ -1,7 +1,7 @@
-// models/JustLaunched.js
+// models/Upcoming.js
 
 module.exports = (sequelize, DataTypes) => {
-  const JustLaunched = sequelize.define("JustLaunched", {
+  const Upcoming = sequelize.define("Upcoming", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -16,13 +16,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   });
-  JustLaunched.associate = (models) => {
-    JustLaunched.belongsTo(models.Series, {
+  Upcoming.associate = (models) => {
+    Upcoming.belongsTo(models.Series, {
       foreignKey: "seriesId",
       as: "series",
       onDelete: "CASCADE",
     });
   };
 
-  return JustLaunched;
+  return Upcoming;
 };

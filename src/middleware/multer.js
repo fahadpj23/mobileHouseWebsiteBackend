@@ -8,7 +8,7 @@ const uploadDirs = [
   "src/uploads/products",
   "src/uploads/whatsappAds",
   "src/uploads/newArrival",
-  "src/uploads/justLaunched",
+  "src/uploads/upcoming",
 ];
 
 uploadDirs.forEach((dir) => {
@@ -61,13 +61,13 @@ const storageConfigs = {
       cb(null, "newArrival" + uniqueSuffix + path.extname(file.originalname));
     },
   }),
-  justLaunched: multer.diskStorage({
+  upcoming: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, "src/uploads/justLaunched");
+      cb(null, "src/uploads/upcoming");
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1000);
-      cb(null, "justLaunched" + uniqueSuffix + path.extname(file.originalname));
+      cb(null, "upcoming" + uniqueSuffix + path.extname(file.originalname));
     },
   }),
 };
@@ -89,8 +89,8 @@ const uploadNewArrival = multer({
   storage: storageConfigs.newArrival,
 }).array("images", 10);
 
-const uploadJustLaunched = multer({
-  storage: storageConfigs.justLaunched,
+const uploadUpcoming = multer({
+  storage: storageConfigs.upcoming,
 }).array("images", 10);
 
 // Export middleware functions
@@ -99,5 +99,5 @@ module.exports = {
   uploadProductImages,
   uploadWhatsappAds,
   uploadNewArrival,
-  uploadJustLaunched,
+  uploadUpcoming,
 };
