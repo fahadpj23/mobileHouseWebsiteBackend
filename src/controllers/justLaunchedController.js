@@ -1,23 +1,10 @@
 const db = require("../models");
 const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Images will be stored in the 'uploads' directory
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname); // Unique filename
-  },
-});
-
-const upload = multer({ storage: storage });
-
-const JustLaunched = db.JustLaunched;
-const JustLaunchedImage = db.JustLaunchedImage;
+// const upload = multer({ storage: storage });
 
 exports.getAllJustLaunched = async (req, res) => {
   try {
-    const JustLaunched = await JustLaunched.findAll();
+    const JustLaunched = await db.JustLaunched.findAll();
     res.json(JustLaunched);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -74,10 +61,10 @@ exports.updateJustLaunched = async (req, res) => {
     if (!JustLaunched)
       return res.status(404).json({ error: "JustLaunched not found" });
 
-    JustLaunched.JustLaunchedName =
-      JustLaunchedName || JustLaunched.JustLaunchedName;
-    JustLaunched.ram = ram || JustLaunched.ram;
-    JustLaunched.storage = storage || JustLaunched.storage;
+    // JustLaunched.JustLaunchedName =
+    //   JustLaunchedName || JustLaunched.JustLaunchedName;
+    // JustLaunched.ram = ram || JustLaunched.ram;
+    // JustLaunched.storage = storage || JustLaunched.storage;
     await JustLaunched.save();
 
     res.json(JustLaunched);
