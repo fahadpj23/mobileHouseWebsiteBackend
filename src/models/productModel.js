@@ -43,6 +43,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    color: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    launchDate: {
+      type: DataTypes.DATE,
+    },
     frontCamera: {
       type: DataTypes.STRING,
       allowNull: false,

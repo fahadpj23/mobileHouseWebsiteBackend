@@ -54,9 +54,11 @@ exports.addProduct = async (req, res) => {
       mrp,
       brand,
       series,
+      color,
       networkType,
       category,
       display,
+      launchDate,
       frontCamera,
       rearCamera,
       os,
@@ -71,6 +73,7 @@ exports.addProduct = async (req, res) => {
       price,
       mrp,
       brand,
+      color,
       seriesId: series,
       networkType,
       category,
@@ -79,6 +82,7 @@ exports.addProduct = async (req, res) => {
       rearCamera,
       os,
       processor,
+      launchDate,
       battery,
     });
 
