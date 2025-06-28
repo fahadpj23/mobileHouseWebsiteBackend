@@ -8,9 +8,17 @@ const {
   addProduct,
   updateProduct,
   deleteProduct,
+  getNewArrival,
+  getSpecialOffer,
+  getTrendingPhone,
+  getProductList,
 } = require("../controllers/productController");
 
 router.get("/", getAllProducts);
+router.get("/newArrival", getNewArrival);
+router.get("/specialOffer", getSpecialOffer);
+router.get("/trendingPhone", getTrendingPhone);
+router.get("/productsList", getProductList);
 router.get("/:id", getProductById);
 router.post("/", uploadProductImages, addProduct);
 router.put("/:id", updateProduct);

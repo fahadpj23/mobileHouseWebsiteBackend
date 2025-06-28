@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    rating: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+    },
     launchDate: {
       type: DataTypes.DATE,
     },
