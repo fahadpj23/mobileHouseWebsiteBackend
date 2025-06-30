@@ -1,4 +1,6 @@
 const db = require("../models");
+const path = require("path");
+const fs = require("fs");
 
 exports.getAllSeries = async (req, res) => {
   try {

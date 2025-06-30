@@ -1,5 +1,7 @@
 const db = require("../models");
 const removeTablePrefixes = "../../utils/tablePrefixRemove.js";
+const path = require("path");
+const fs = require("fs");
 
 exports.getAllWhatsappAds = async (req, res) => {
   try {

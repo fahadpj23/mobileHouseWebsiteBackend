@@ -1,5 +1,6 @@
 const db = require("../models");
-
+const path = require("path");
+const fs = require("fs");
 const Banner = db.Banner;
 
 exports.getAllBanner = async (req, res) => {
@@ -89,10 +90,11 @@ exports.updateBanner = async (req, res) => {
 
 exports.deleteBanner = async (req, res) => {
   try {
-    const Banner = await Banner.findByPk(req.params.id);
+    const Banner = await db.Banner.findByPk(req.params.id);
     if (!Banner) return res.status(404).json({ error: "Banner not found" });
     const imagePath = path.join(__dirname, "..", Banner.imageUrl);
     // Delete file from disk
+    console.log(imagePath);
     if (fs.existsSync(imagePath)) {
       fs.unlink(imagePath, (err) => {
         if (err) {
@@ -103,7 +105,7 @@ exports.deleteBanner = async (req, res) => {
     } else {
       console.warn("Image file not found at:", imagePath);
     }
-    await Banner.destroy();
+    await db.Banner.destroy({ where: { id: req.params.id } });
     res.json({ message: "Banner deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });

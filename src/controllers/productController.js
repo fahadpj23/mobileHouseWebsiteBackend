@@ -3,12 +3,14 @@ const { sequelize } = require("../models");
 const { Op } = require("sequelize");
 const Product = db.Product;
 const ProductImage = db.ProductImage;
+const path = require("path");
+const fs = require("fs");
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll({
+    const products = await db.Product.findAll({
       include: {
-        model: ProductImage,
+        model: db.ProductImage,
         as: "images",
       },
     });
@@ -112,7 +114,6 @@ exports.getProductList = async (req, res) => {
     }
     if (ram) {
       const ramArray = Array.isArray(ram) ? ram : ram.split(",");
-      console.log(ramArray);
       where.ram = {
         [Op.in]: ramArray,
       };
@@ -172,7 +173,6 @@ exports.getProductList = async (req, res) => {
 };
 
 exports.getProductById = async (req, res) => {
-  console.log(req.params.id);
   try {
     const product = await Product.findByPk(req.params.id, {
       include: {
@@ -244,7 +244,7 @@ exports.addProduct = async (req, res) => {
       const productImage = await Promise.all(
         images.map((file, index) =>
           db.ProductImage.create({
-            imageUrl: `/uploads/${file.filename}`,
+            imageUrl: `/uploads/products/${file.filename}`,
             isMain: index === 0, // Set first image as main by default
             productId: newProduct.id,
           })
@@ -279,29 +279,42 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-    const product = await db.Product.findByPk(req.params.id);
-    if (!product) return res.status(404).json({ error: "Product not found" });
+    const product = await db.Product.findByPk(req.params.id, {
+      include: {
+        model: db.ProductImage, // Fixed: Use db.ProductImage
+        as: "images",
+      },
+    });
 
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Delete associated images from filesystem (if they exist)
     if (product.images && product.images.length > 0) {
-      // Delete files from filesystem
       await Promise.all(
         product.images.map(async (image) => {
-          const imagePath = path.join(__dirname, "..", image.url);
-
+          const imagePath = path.join(__dirname, "..", image.imageUrl);
+          console.log(imagePath);
           try {
             if (fs.existsSync(imagePath)) {
-              await unlinkAsync(imagePath);
-              console.log(`Deleted image file: ${imagePath}`);
+              fs.unlinkSync(imagePath); // Synchronous deletion (or use fs.promises.unlink)
+            } else {
+              console.log("image not found");
             }
           } catch (err) {
-            console.error(`Error deleting image file ${imagePath}:`, err);
-            // Continue even if file deletion fails
+            console.error("Error deleting image file:", err);
           }
         })
       );
-      await db.Product.destroy();
-      res.json({ message: "Product deleted successfully" });
     }
+
+    // Delete the product from the database
+    await db.Product.destroy({
+      where: { id: req.params.id }, // REQUIRED: Specify which product to delete
+    });
+
+    res.json({ message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
