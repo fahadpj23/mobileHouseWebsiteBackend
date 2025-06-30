@@ -56,7 +56,7 @@ exports.updateSeries = async (req, res) => {
 
 exports.deleteSeries = async (req, res) => {
   try {
-    const Series = await Series.findByPk(req.params.id);
+    const Series = await db.Series.findByPk(req.params.id);
     if (!Series) return res.status(404).json({ error: "Series not found" });
 
     await Series.destroy();

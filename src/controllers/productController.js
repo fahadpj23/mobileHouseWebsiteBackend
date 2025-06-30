@@ -279,11 +279,29 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByPk(req.params.id);
+    const product = await db.Product.findByPk(req.params.id);
     if (!product) return res.status(404).json({ error: "Product not found" });
 
-    await product.destroy();
-    res.json({ message: "Product deleted successfully" });
+    if (product.images && product.images.length > 0) {
+      // Delete files from filesystem
+      await Promise.all(
+        product.images.map(async (image) => {
+          const imagePath = path.join(__dirname, "..", image.url);
+
+          try {
+            if (fs.existsSync(imagePath)) {
+              await unlinkAsync(imagePath);
+              console.log(`Deleted image file: ${imagePath}`);
+            }
+          } catch (err) {
+            console.error(`Error deleting image file ${imagePath}:`, err);
+            // Continue even if file deletion fails
+          }
+        })
+      );
+      await db.Product.destroy();
+      res.json({ message: "Product deleted successfully" });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

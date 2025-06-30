@@ -1,5 +1,5 @@
 const express = require("express");
-const { uploadNewArrival } = require("../middleware/multer");
+const { uploadNewArrival, convertToWebP } = require("../middleware/multer");
 
 const router = express.Router();
 const {

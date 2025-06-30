@@ -38,6 +38,13 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
     });
   };
+  Series.associate = (models) => {
+    Series.hasMany(models.Product, {
+      foreignKey: "seriesId",
+      as: "series",
+      onDelete: "CASCADE",
+    });
+  };
 
   return Series;
 };

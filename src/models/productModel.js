@@ -82,5 +82,12 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: "CASCADE",
     });
   };
+  Product.associate = (models) => {
+    Product.belongsTo(models.Series, {
+      foreignKey: "seriesId",
+      as: "series",
+      onDelete: "CASCADE",
+    });
+  };
   return Product;
 };

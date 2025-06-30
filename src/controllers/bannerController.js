@@ -91,7 +91,18 @@ exports.deleteBanner = async (req, res) => {
   try {
     const Banner = await Banner.findByPk(req.params.id);
     if (!Banner) return res.status(404).json({ error: "Banner not found" });
-
+    const imagePath = path.join(__dirname, "..", Banner.imageUrl);
+    // Delete file from disk
+    if (fs.existsSync(imagePath)) {
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Error deleting image file:", err);
+          // Continue with deletion even if file deletion fails
+        }
+      });
+    } else {
+      console.warn("Image file not found at:", imagePath);
+    }
     await Banner.destroy();
     res.json({ message: "Banner deleted successfully" });
   } catch (error) {

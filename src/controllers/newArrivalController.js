@@ -1,4 +1,6 @@
 const db = require("../models");
+const path = require("path");
+const fs = require("fs");
 
 exports.getAllNewArrivals = async (req, res) => {
   try {
@@ -87,16 +89,32 @@ exports.updateNewArrival = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 exports.deleteNewArrival = async (req, res) => {
   try {
-    const NewArrival = await db.NewArrival.findByPk(req.params.id);
-    if (!NewArrival)
-      return res.status(404).json({ error: "NewArrival not found" });
+    const newArrival = await db.NewArrival.findByPk(req.params.id);
 
-    await NewArrival.destroy();
+    if (!newArrival) {
+      return res.status(404).json({ error: "NewArrival not found" });
+    }
+    const imagePath = path.join(__dirname, "..", newArrival.imageUrl);
+    // Delete file from disk
+    if (fs.existsSync(imagePath)) {
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Error deleting image file:", err);
+          // Continue with deletion even if file deletion fails
+        }
+      });
+    } else {
+      console.warn("Image file not found at:", imagePath);
+    }
+
+    // Delete the database record
+    await newArrival.destroy();
+
     res.json({ message: "NewArrival deleted successfully" });
   } catch (error) {
+    console.error("Error in deleteNewArrival:", error);
     res.status(500).json({ error: error.message });
   }
 };

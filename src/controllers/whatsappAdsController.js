@@ -92,10 +92,21 @@ exports.updateWhatsappAds = async (req, res) => {
 
 exports.deleteWhatsappAds = async (req, res) => {
   try {
-    const WhatsappAds = await WhatsappAds.findByPk(req.params.id);
+    const WhatsappAds = await db.WhatsappAds.findByPk(req.params.id);
     if (!WhatsappAds)
       return res.status(404).json({ error: "WhatsappAds not found" });
-
+    const imagePath = path.join(__dirname, "..", WhatsappAds.imageUrl);
+    // Delete file from disk
+    if (fs.existsSync(imagePath)) {
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Error deleting image file:", err);
+          // Continue with deletion even if file deletion fails
+        }
+      });
+    } else {
+      console.warn("Image file not found at:", imagePath);
+    }
     await WhatsappAds.destroy();
     res.json({ message: "WhatsappAds deleted successfully" });
   } catch (error) {
