@@ -32,7 +32,7 @@ exports.getAllWhatsappAds = async (req, res) => {
 
 exports.getWhatsappAdsById = async (req, res) => {
   try {
-    const WhatsappAds = await WhatsappAds.findByPk(req.params.id, {
+    const WhatsappAds = await db.WhatsappAds.findByPk(req.params.id, {
       include: {
         model: WhatsappAdsImage,
         as: "images",
