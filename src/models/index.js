@@ -35,6 +35,8 @@ db.NewArrival = require("./newArrivalModel.js")(sequelize, DataTypes);
 db.Upcoming = require("./upcomingModel.js")(sequelize, DataTypes);
 db.WhatsappAds = require("./whatsappAdsModel.js")(sequelize, DataTypes);
 db.Series = require("./seriesModel.js")(sequelize, DataTypes);
+db.Series = require("./seriesModel.js")(sequelize, DataTypes);
+db.User = require("./userModel.js")(sequelize, DataTypes);
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {

@@ -9,6 +9,7 @@ const newArrivalRoutes = require("./routes/newArrivalRoutes");
 const upcomingRoutes = require("./routes/upcomingRoutes");
 const whatsappAdsRoutes = require("./routes/whatsappAdsRoutes");
 const seriesRoutes = require("./routes/seriesRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true }));
@@ -20,6 +21,7 @@ app.use(
     credentials: true, // If you need to send cookies
   })
 );
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
@@ -32,6 +34,7 @@ app.use("/api/newArrival", newArrivalRoutes);
 app.use("/api/upcoming", upcomingRoutes);
 app.use("/api/whatsappAds", whatsappAdsRoutes);
 app.use("/api/series", seriesRoutes);
+app.use("/api/user", userRoutes);
 
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
