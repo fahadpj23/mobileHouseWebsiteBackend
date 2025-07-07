@@ -13,6 +13,7 @@ router.get("/", getAllBanner);
 router.get("/:id", getBannerById);
 router.post("/", uploadBanner, addBanner);
 router.put("/:id", updateBanner);
+
 router.delete("/:id", deleteBanner);
 
 module.exports = router;

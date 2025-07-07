@@ -1,17 +1,51 @@
 const db = require("../models");
 const { sequelize } = require("../models");
 const { Op } = require("sequelize");
-const Product = db.Product;
-const ProductImage = db.ProductImage;
+
 const path = require("path");
 const fs = require("fs");
+// controllers/productController.js
+const {
+  Product,
+  ProductVariant,
+  ProductColor,
+  ProductImage,
+} = require("../models");
+const uploadProductImages = require("../middleware/multer");
 
 exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await db.Product.findAll({
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+          include: [
+            {
+              model: ProductColor,
+              as: "colors",
+              include: [{ model: ProductImage, as: "images" }],
+            },
+          ],
+        },
+      ],
+    });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getProductByBrand = async (req, res) => {
+  console.log(req.params.brand);
   try {
     const products = await db.Product.findAll({
       include: {
         model: db.ProductImage,
         as: "images",
+      },
+      where: {
+        brand: "vivo",
       },
     });
     res.json(products);
@@ -188,78 +222,136 @@ exports.getProductById = async (req, res) => {
 };
 
 exports.addProduct = async (req, res) => {
+  let transaction;
   try {
+    transaction = await sequelize.transaction();
+
     const {
       productName,
-      ram,
-      storage,
-      price,
-      mrp,
       brand,
-      series,
-      color,
-      networkType,
       category,
+      networkType,
       display,
-      launchDate,
-      frontCamera,
       rating,
+      frontCamera,
+      launchDate,
       rearCamera,
-      os,
-      processor,
       battery,
+      os,
+      series,
+      processor,
+      variants,
+      colors,
     } = req.body;
 
-    const newProduct = await Product.create({
-      productName,
-      ram,
-      storage,
-      price,
-      mrp,
-      brand,
-      color,
-      seriesId: series,
-      networkType,
-      category,
-      rating,
-      display,
-      frontCamera,
-      rearCamera,
-      os,
-      processor,
-      launchDate,
-      battery,
+    // Create product
+    const product = await Product.create(
+      {
+        productName,
+        brand,
+        category,
+        networkType,
+        display,
+        rating,
+        frontCamera,
+        seriesId: series,
+        launchDate,
+        rearCamera,
+        battery,
+        os,
+        processor,
+      },
+      { transaction }
+    );
+
+    // Parse variants and colors
+    const variantData = JSON.parse(variants);
+    const colorData = JSON.parse(colors);
+
+    // Create product variants
+    const createdVariants = await Promise.all(
+      variantData.map((variant) =>
+        ProductVariant.create(
+          {
+            productId: product.id,
+            price: variant.price,
+            stock: variant.stock,
+            ram: variant.ram,
+            storage: variant.storage,
+            mrp: variant.mrp || variant.price,
+          },
+          { transaction }
+        )
+      )
+    );
+
+    // Create colors and images
+    const createdColors = await Promise.all(
+      colorData.map(async (color) => {
+        const createdColor = await ProductColor.create(
+          {
+            productId: product.id,
+            name: color.color,
+          },
+          { transaction }
+        );
+
+        if (color.images?.length) {
+          await Promise.all(
+            color.images.map((image) =>
+              ProductImage.create(
+                {
+                  colorId: createdColor.id,
+                  image: `/uploads/products/${image.filename}`,
+                },
+                { transaction }
+              )
+            )
+          );
+        }
+        return createdColor;
+      })
+    );
+
+    // Commit transaction before final fetch
+    await transaction.commit();
+
+    // Fetch complete product WITHOUT transaction
+    const completeProduct = await Product.findByPk(product.id, {
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+          include: [
+            {
+              model: ProductColor,
+              as: "colors",
+              include: [{ model: ProductImage, as: "images" }],
+            },
+          ],
+        },
+      ],
     });
 
-    try {
-      const images = req.files;
-
-      if (!images || images.length === 0) {
-        return res
-          .status(400)
-          .json({ error: "At least one image is required" });
-      }
-
-      // Create product images
-      const productImage = await Promise.all(
-        images.map((file, index) =>
-          db.ProductImage.create({
-            imageUrl: `/uploads/products/${file.filename}`,
-            isMain: index === 0, // Set first image as main by default
-            productId: newProduct.id,
-          })
-        )
-      );
-      res.status(201).json(newProduct);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Server error" });
-    }
+    res.status(201).json({
+      success: true,
+      product: completeProduct,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Only rollback if transaction exists and isn't finished
+    if (transaction && !transaction.finished) {
+      await transaction.rollback();
+    }
+
+    console.error("Error creating product:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to create product",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
-
 exports.updateProduct = async (req, res) => {
   try {
     const { productName, ram, storage } = req.body;
@@ -294,7 +386,7 @@ exports.deleteProduct = async (req, res) => {
     if (product.images && product.images.length > 0) {
       await Promise.all(
         product.images.map(async (image) => {
-          const imagePath = path.join(__dirname, "..", image.imageUrl);
+          const imagePath = path.join(__dirname, "..", image.image);
           console.log(imagePath);
           try {
             if (fs.existsSync(imagePath)) {

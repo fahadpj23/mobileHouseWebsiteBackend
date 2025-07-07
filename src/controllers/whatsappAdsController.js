@@ -61,7 +61,7 @@ exports.addWhatsappAds = async (req, res) => {
       images.map((file, index) =>
         db.WhatsappAds.create({
           seriesId: series,
-          imageUrl: `/uploads/whatsappAds/${file.filename}`,
+          image: `/uploads/whatsappAds/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
         })
       )
@@ -97,7 +97,7 @@ exports.deleteWhatsappAds = async (req, res) => {
     const WhatsappAds = await db.WhatsappAds.findByPk(req.params.id);
     if (!WhatsappAds)
       return res.status(404).json({ error: "WhatsappAds not found" });
-    const imagePath = path.join(__dirname, "..", WhatsappAds.imageUrl);
+    const imagePath = path.join(__dirname, "..", WhatsappAds.image);
     // Delete file from disk
     if (fs.existsSync(imagePath)) {
       fs.unlink(imagePath, (err) => {

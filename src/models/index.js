@@ -30,11 +30,12 @@ db.Sequelize = Sequelize;
 
 db.Product = require("./productModel.js")(sequelize, DataTypes);
 db.ProductImage = require("./productImageModel.js")(sequelize, DataTypes);
+db.ProductVariant = require("./productVariantModel.js")(sequelize, DataTypes);
+db.ProductColor = require("./productColorModel.js")(sequelize, DataTypes);
 db.Banner = require("./bannerModel.js")(sequelize, DataTypes);
 db.NewArrival = require("./newArrivalModel.js")(sequelize, DataTypes);
 db.Upcoming = require("./upcomingModel.js")(sequelize, DataTypes);
 db.WhatsappAds = require("./whatsappAdsModel.js")(sequelize, DataTypes);
-db.Series = require("./seriesModel.js")(sequelize, DataTypes);
 db.Series = require("./seriesModel.js")(sequelize, DataTypes);
 db.User = require("./userModel.js")(sequelize, DataTypes);
 

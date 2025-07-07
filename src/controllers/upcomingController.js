@@ -59,7 +59,7 @@ exports.addUpcoming = async (req, res) => {
       images.map((file, index) =>
         db.Upcoming.create({
           seriesId: series,
-          imageUrl: `/uploads/Upcoming/${file.filename}`,
+          image: `/uploads/Upcoming/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
         })
       )
@@ -93,7 +93,7 @@ exports.deleteUpcoming = async (req, res) => {
   try {
     const Upcoming = await db.Upcoming.findByPk(req.params.id);
     if (!Upcoming) return res.status(404).json({ error: "Upcoming not found" });
-    const imagePath = path.join(__dirname, "..", Upcoming.imageUrl);
+    const imagePath = path.join(__dirname, "..", Upcoming.image);
     // Delete file from disk
     if (fs.existsSync(imagePath)) {
       fs.unlink(imagePath, (err) => {

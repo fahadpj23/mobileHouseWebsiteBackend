@@ -12,6 +12,7 @@ const {
   getSpecialOffer,
   getTrendingPhone,
   getProductList,
+  getProductByBrand,
 } = require("../controllers/productController");
 
 router.get("/", getAllProducts);
@@ -20,6 +21,7 @@ router.get("/specialOffer", getSpecialOffer);
 router.get("/trendingPhone", getTrendingPhone);
 router.get("/productsList", getProductList);
 router.get("/:id", getProductById);
+router.get("/brand/:brand", getProductByBrand);
 router.post("/", uploadProductImages, addProduct);
 router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);

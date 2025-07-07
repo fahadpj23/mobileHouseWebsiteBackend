@@ -1,26 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Product = sequelize.define("Product", {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
     productName: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    ram: {
-      type: DataTypes.INTEGER,
-    },
-    storage: {
-      type: DataTypes.INTEGER,
-    },
-    price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-    },
-    mrp: {
-      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
     brand: {
@@ -40,10 +21,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     display: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    color: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -75,12 +52,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   });
+
   Product.associate = (models) => {
-    Product.hasMany(models.ProductImage, {
+    Product.hasMany(models.ProductVariant, {
       foreignKey: "productId",
-      as: "images",
-      onDelete: "CASCADE",
+      as: "variants",
     });
+
     Product.belongsTo(models.Series, {
       foreignKey: "seriesId",
       as: "series",

@@ -60,7 +60,7 @@ exports.addBanner = async (req, res) => {
       images.map((file, index) =>
         db.Banner.create({
           seriesId: series,
-          imageUrl: `/uploads/banners/${file.filename}`,
+          image: `/uploads/banners/${file.filename}`,
         })
       )
     );
@@ -92,7 +92,7 @@ exports.deleteBanner = async (req, res) => {
   try {
     const Banner = await db.Banner.findByPk(req.params.id);
     if (!Banner) return res.status(404).json({ error: "Banner not found" });
-    const imagePath = path.join(__dirname, "..", Banner.imageUrl);
+    const imagePath = path.join(__dirname, "..", Banner.image);
     // Delete file from disk
     console.log(imagePath);
     if (fs.existsSync(imagePath)) {

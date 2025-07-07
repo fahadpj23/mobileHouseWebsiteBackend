@@ -59,7 +59,7 @@ exports.addNewArrival = async (req, res) => {
     const newArrival = await Promise.all(
       images.map((file, index) =>
         db.NewArrival.create({
-          imageUrl: `/uploads/newArrival/${file.filename}`,
+          image: `/uploads/newArrival/${file.filename}`,
           seriesId: series,
           isMain: index === 0, // Set first image as main by default
         })
@@ -96,7 +96,7 @@ exports.deleteNewArrival = async (req, res) => {
     if (!newArrival) {
       return res.status(404).json({ error: "NewArrival not found" });
     }
-    const imagePath = path.join(__dirname, "..", newArrival.imageUrl);
+    const imagePath = path.join(__dirname, "..", newArrival.image);
     // Delete file from disk
     if (fs.existsSync(imagePath)) {
       fs.unlink(imagePath, (err) => {
