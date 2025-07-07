@@ -15,18 +15,16 @@ const uploadProductImages = require("../middleware/multer");
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await db.Product.findAll({
+    const products = await Product.findAll({
       include: [
         {
           model: ProductVariant,
           as: "variants",
-          include: [
-            {
-              model: ProductColor,
-              as: "colors",
-              include: [{ model: ProductImage, as: "images" }],
-            },
-          ],
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          include: [{ model: ProductImage, as: "images" }],
         },
       ],
     });
@@ -223,6 +221,7 @@ exports.getProductById = async (req, res) => {
 
 exports.addProduct = async (req, res) => {
   let transaction;
+
   try {
     transaction = await sequelize.transaction();
 
@@ -267,7 +266,11 @@ exports.addProduct = async (req, res) => {
     // Parse variants and colors
     const variantData = JSON.parse(variants);
     const colorData = JSON.parse(colors);
+    // Get uploaded files
+    const uploadedFiles = req.files;
 
+    // Track file index for each image
+    let fileIndex = 0;
     // Create product variants
     const createdVariants = await Promise.all(
       variantData.map((variant) =>
@@ -284,29 +287,34 @@ exports.addProduct = async (req, res) => {
         )
       )
     );
-
+    // console.log(createdColors);
     // Create colors and images
     const createdColors = await Promise.all(
       colorData.map(async (color) => {
         const createdColor = await ProductColor.create(
           {
-            productId: product.id,
             name: color.color,
+            productId: product.id,
           },
           { transaction }
         );
 
         if (color.images?.length) {
           await Promise.all(
-            color.images.map((image) =>
-              ProductImage.create(
-                {
-                  colorId: createdColor.id,
-                  image: `/uploads/products/${image.filename}`,
-                },
-                { transaction }
-              )
-            )
+            color.images.map(() => {
+              if (fileIndex < uploadedFiles.length) {
+                const file = uploadedFiles[fileIndex];
+                fileIndex++;
+                return ProductImage.create(
+                  {
+                    colorId: createdColor.id,
+                    image: `/uploads/products/${file.filename}`,
+                  },
+                  { transaction }
+                );
+              }
+              return Promise.resolve();
+            })
           );
         }
         return createdColor;
@@ -322,13 +330,11 @@ exports.addProduct = async (req, res) => {
         {
           model: ProductVariant,
           as: "variants",
-          include: [
-            {
-              model: ProductColor,
-              as: "colors",
-              include: [{ model: ProductImage, as: "images" }],
-            },
-          ],
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          include: [{ model: ProductImage, as: "images" }],
         },
       ],
     });

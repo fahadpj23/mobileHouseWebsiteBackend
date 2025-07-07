@@ -20,20 +20,12 @@ module.exports = (sequelize, DataTypes) => {
     mrp: {
       type: DataTypes.INTEGER,
     },
-    productId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
   });
 
   ProductVariant.associate = (models) => {
     ProductVariant.belongsTo(models.Product, {
       foreignKey: "productId",
       as: "product",
-    });
-    ProductVariant.hasMany(models.ProductColor, {
-      foreignKey: "variantId",
-      as: "colors",
     });
   };
   return ProductVariant;
