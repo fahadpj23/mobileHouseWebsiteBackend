@@ -23,7 +23,7 @@ router.get("/productsList", getProductList);
 router.get("/:id", getProductById);
 router.get("/brand/:brand", getProductByBrand);
 router.post("/", uploadProductImages, addProduct);
-router.put("/:id", updateProduct);
+router.put("/:productId", uploadProductImages, updateProduct);
 router.delete("/:id", deleteProduct);
 
 module.exports = router;

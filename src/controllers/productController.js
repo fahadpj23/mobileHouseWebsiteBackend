@@ -11,7 +11,6 @@ const {
   ProductColor,
   ProductImage,
 } = require("../models");
-const uploadProductImages = require("../middleware/multer");
 
 exports.getAllProducts = async (req, res) => {
   try {
@@ -35,15 +34,22 @@ exports.getAllProducts = async (req, res) => {
 };
 
 exports.getProductByBrand = async (req, res) => {
-  console.log(req.params.brand);
+  const brandName = req.params.brand;
   try {
     const products = await db.Product.findAll({
-      include: {
-        model: db.ProductImage,
-        as: "images",
-      },
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          include: [{ model: ProductImage, as: "images" }],
+        },
+      ],
       where: {
-        brand: "vivo",
+        brand: "brandName",
       },
     });
     res.json(products);
@@ -57,10 +63,17 @@ exports.getNewArrival = async (req, res) => {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     const products = await Product.findAll({
-      include: {
-        model: ProductImage,
-        as: "images",
-      },
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          include: [{ model: ProductImage, as: "images" }],
+        },
+      ],
       where: {
         launchDate: {
           [Op.gte]: sixMonthsAgo, // Greater than or equal to 6 months ago
@@ -79,18 +92,28 @@ exports.getSpecialOffer = async (req, res) => {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     const products = await Product.findAll({
-      include: {
-        model: ProductImage,
-        as: "images",
-      },
-      where: {
-        [Op.and]: [
-          { mrp: { [Op.gt]: 0 } },
-          sequelize.where(sequelize.literal("((mrp - price) / mrp) * 100"), {
-            [Op.gt]: 15,
-          }),
-        ],
-      },
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+          where: {
+            [Op.and]: [
+              { mrp: { [Op.gt]: 0 } },
+              sequelize.where(
+                sequelize.literal("((mrp - price) / mrp) * 100"),
+                {
+                  [Op.gt]: 15,
+                }
+              ),
+            ],
+          },
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          include: [{ model: ProductImage, as: "images" }],
+        },
+      ],
     });
     res.json(products);
   } catch (error) {
@@ -103,10 +126,17 @@ exports.getTrendingPhone = async (req, res) => {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     const products = await Product.findAll({
-      include: {
-        model: ProductImage,
-        as: "images",
-      },
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          include: [{ model: ProductImage, as: "images" }],
+        },
+      ],
       where: {
         rating: {
           [Op.gte]: 4, // Greater than or equal to 4
@@ -207,10 +237,17 @@ exports.getProductList = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id, {
-      include: {
-        model: ProductImage,
-        as: "images",
-      },
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          include: [{ model: ProductImage, as: "images" }],
+        },
+      ],
     });
     if (!product) return res.status(404).json({ error: "Product not found" });
     res.json(product);
@@ -237,7 +274,7 @@ exports.addProduct = async (req, res) => {
       rearCamera,
       battery,
       os,
-      series,
+      seriesId,
       processor,
       variants,
       colors,
@@ -253,7 +290,7 @@ exports.addProduct = async (req, res) => {
         display,
         rating,
         frontCamera,
-        seriesId: series,
+        seriesId,
         launchDate,
         rearCamera,
         battery,
@@ -268,8 +305,6 @@ exports.addProduct = async (req, res) => {
     const colorData = JSON.parse(colors);
     // Get uploaded files
     const uploadedFiles = req.files;
-
-    // Track file index for each image
     let fileIndex = 0;
     // Create product variants
     const createdVariants = await Promise.all(
@@ -293,7 +328,7 @@ exports.addProduct = async (req, res) => {
       colorData.map(async (color) => {
         const createdColor = await ProductColor.create(
           {
-            name: color.color,
+            name: color.name,
             productId: product.id,
           },
           { transaction }
@@ -358,20 +393,190 @@ exports.addProduct = async (req, res) => {
     });
   }
 };
+
 exports.updateProduct = async (req, res) => {
+  let transaction;
+
   try {
-    const { productName, ram, storage } = req.body;
-    const product = await Product.findByPk(req.params.id);
-    if (!product) return res.status(404).json({ error: "Product not found" });
+    transaction = await sequelize.transaction();
+    const { productId } = req.params;
+    const {
+      productName,
+      brand,
+      category,
+      networkType,
+      display,
+      rating,
+      frontCamera,
+      launchDate,
+      rearCamera,
+      battery,
+      os,
+      seriesId,
+      processor,
+      variants,
+      colors,
+    } = req.body;
 
-    product.productName = productName || product.productName;
-    product.ram = ram || product.ram;
-    product.storage = storage || product.storage;
-    await product.save();
+    // Update main product details
+    await Product.update(
+      {
+        productName,
+        brand,
+        category,
+        networkType,
+        display,
+        rating,
+        frontCamera,
+        seriesId,
+        launchDate,
+        rearCamera,
+        battery,
+        os,
+        processor,
+      },
+      {
+        where: { id: productId },
+        transaction,
+      }
+    );
 
-    res.json(product);
+    // Parse variants and colors
+    const variantData = JSON.parse(variants);
+    const colorData = JSON.parse(colors);
+    const uploadedFiles = req.files || [];
+    let fileIndex = 0;
+
+    // Handle variants - update existing or create new
+    await Promise.all(
+      variantData.map(async (variant) => {
+        if (variant.id) {
+          // Update existing variant
+          await ProductVariant.update(
+            {
+              price: variant.price,
+              stock: variant.stock,
+              ram: variant.ram,
+              storage: variant.storage,
+              mrp: variant.mrp || variant.price,
+            },
+            {
+              where: { id: variant.id, productId },
+              transaction,
+            }
+          );
+        } else {
+          // Create new variant
+          await ProductVariant.create(
+            {
+              productId,
+              price: variant.price,
+              stock: variant.stock,
+              ram: variant.ram,
+              storage: variant.storage,
+              mrp: variant.mrp || variant.price,
+            },
+            { transaction }
+          );
+        }
+      })
+    );
+
+    // Handle colors and images
+    await Promise.all(
+      colorData.map(async (color) => {
+        let colorInstance;
+
+        if (color.id) {
+          // Update existing color
+          await ProductColor.update(
+            { name: color.name },
+            {
+              where: { id: color.id, productId },
+              transaction,
+            }
+          );
+          colorInstance = await ProductColor.findByPk(color.id, {
+            transaction,
+          });
+        } else {
+          // Create new color
+          colorInstance = await ProductColor.create(
+            {
+              name: color.name,
+              productId,
+            },
+            { transaction }
+          );
+        }
+
+        // Handle image deletions
+        if (color.deletedImages?.length) {
+          await ProductImage.destroy({
+            where: {
+              id: color.deletedImages,
+              colorId: colorInstance.id,
+            },
+            transaction,
+          });
+        }
+
+        // Add new images
+        if (color.images) {
+          await Promise.all(
+            color.images.map((img) => {
+              if (img.isNew && fileIndex < uploadedFiles.length) {
+                const file = uploadedFiles[fileIndex];
+                fileIndex++;
+                return ProductImage.create(
+                  {
+                    colorId: colorInstance.id,
+                    image: `/uploads/products/${file.filename}`,
+                  },
+                  { transaction }
+                );
+              }
+              return Promise.resolve();
+            })
+          );
+        }
+      })
+    );
+
+    // Commit transaction before final fetch
+    await transaction.commit();
+
+    // Fetch complete updated product
+    const updatedProduct = await Product.findByPk(productId, {
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          include: [{ model: ProductImage, as: "images" }],
+        },
+      ],
+    });
+
+    res.status(200).json({
+      success: true,
+      product: updatedProduct,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (transaction && !transaction.finished) {
+      await transaction.rollback();
+    }
+
+    console.error("Error updating product:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to update product",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
 
