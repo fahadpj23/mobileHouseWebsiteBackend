@@ -47,7 +47,7 @@ exports.getNewArrivalById = async (req, res) => {
 
 exports.addNewArrival = async (req, res) => {
   try {
-    const { series } = req.body;
+    const { seriesId } = req.body;
 
     const images = req.files;
 
@@ -60,7 +60,7 @@ exports.addNewArrival = async (req, res) => {
       images.map((file, index) =>
         db.NewArrival.create({
           image: `/uploads/newArrival/${file.filename}`,
-          seriesId: series,
+          seriesId,
           isMain: index === 0, // Set first image as main by default
         })
       )

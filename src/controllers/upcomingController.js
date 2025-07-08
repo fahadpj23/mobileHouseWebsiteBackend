@@ -46,7 +46,7 @@ exports.getUpcomingById = async (req, res) => {
 
 exports.addUpcoming = async (req, res) => {
   try {
-    const { series } = req.body;
+    const { seriesId } = req.body;
 
     const images = req.files;
 
@@ -58,7 +58,7 @@ exports.addUpcoming = async (req, res) => {
     const Upcoming = await Promise.all(
       images.map((file, index) =>
         db.Upcoming.create({
-          seriesId: series,
+          seriesId,
           image: `/uploads/Upcoming/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
         })

@@ -47,7 +47,7 @@ exports.getBannerById = async (req, res) => {
 
 exports.addBanner = async (req, res) => {
   try {
-    const { series } = req.body;
+    const { seriesId } = req.body;
 
     const images = req.files;
 
@@ -59,7 +59,7 @@ exports.addBanner = async (req, res) => {
     const BannerImage = await Promise.all(
       images.map((file, index) =>
         db.Banner.create({
-          seriesId: series,
+          seriesId,
           image: `/uploads/banners/${file.filename}`,
         })
       )
