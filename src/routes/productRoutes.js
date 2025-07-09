@@ -21,7 +21,7 @@ const {
 router.get("/", getAllProducts);
 router.get("/:productId/colors", getProductColors);
 router.get("/:productId/variants", getProductVariants);
-router.get("/newArrival", getNewArrival);
+router.get("/newArrivalProduct", getNewArrival);
 router.get("/specialOffer", getSpecialOffer);
 router.get("/trendingPhone", getTrendingPhone);
 router.get("/productsList", getProductList);

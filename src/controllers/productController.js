@@ -49,7 +49,7 @@ exports.getProductByBrand = async (req, res) => {
         },
       ],
       where: {
-        brand: "brandName",
+        brand: brandName,
       },
     });
     res.json(products);
@@ -99,17 +99,6 @@ exports.getSpecialOffer = async (req, res) => {
           model: ProductVariant,
           as: "variants",
           limit: 1,
-          where: {
-            [Op.and]: [
-              { mrp: { [Op.gt]: 0 } },
-              sequelize.where(
-                sequelize.literal("((mrp - price) / mrp) * 100"),
-                {
-                  [Op.gt]: 15,
-                }
-              ),
-            ],
-          },
         },
         {
           model: ProductColor,
@@ -119,7 +108,14 @@ exports.getSpecialOffer = async (req, res) => {
         },
       ],
     });
-    res.json(products);
+    const productsWithSignificantDifferences = products.filter((product) => {
+      const difference =
+        product?.variants[0]?.mrp - product?.variants[0]?.price;
+      const percentageDifference =
+        (difference / product?.variants[0]?.mrp) * 100;
+      return percentageDifference >= 15;
+    });
+    res.json(productsWithSignificantDifferences);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
