@@ -15,6 +15,7 @@ const {
   getProductByBrand,
   getProductColors,
   getProductVariants,
+  getProductByIdEdit,
 } = require("../controllers/productController");
 
 router.get("/", getAllProducts);
@@ -24,6 +25,7 @@ router.get("/newArrival", getNewArrival);
 router.get("/specialOffer", getSpecialOffer);
 router.get("/trendingPhone", getTrendingPhone);
 router.get("/productsList", getProductList);
+router.get("/:id/edit", getProductByIdEdit);
 router.get("/:id/:productVariantId/:productColorId", getProductById);
 router.get("/brand/:brand", getProductByBrand);
 router.post("/", uploadProductImages, addProduct);

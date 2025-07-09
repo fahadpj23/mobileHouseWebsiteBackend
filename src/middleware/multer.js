@@ -75,7 +75,7 @@ const storageConfigs = {
 // Middleware for multiple product images
 const uploadProductImages = multer({
   storage: storageConfigs.productMain,
-}).array("images", 6); // Allow up to 6 images
+}).array("images", 50); // Allow up to 6 images
 
 const uploadBanner = multer({
   storage: storageConfigs.banner,

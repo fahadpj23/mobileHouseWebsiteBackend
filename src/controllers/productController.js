@@ -240,6 +240,28 @@ exports.getProductList = async (req, res) => {
   }
 };
 
+exports.getProductByIdEdit = async (req, res) => {
+  try {
+    const product = await Product.findByPk(req.params.id, {
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          include: [{ model: ProductImage, as: "images" }],
+        },
+      ],
+    });
+    if (!product) return res.status(404).json({ error: "Product not found" });
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getProductById = async (req, res) => {
   try {
     const { id, productVariantId, productColorId } = req.params;
@@ -251,13 +273,14 @@ exports.getProductById = async (req, res) => {
           model: ProductVariant,
           as: "variants",
           where: { id: productVariantId },
-          required: true, // Ensures INNER JOIN (only returns if variant exists)
+          required: true,
         },
         {
           model: ProductColor,
           as: "colors",
           where: { id: productColorId },
-          required: true, // Ensures INNER JOIN (only returns if color exists)
+          required: true,
+
           include: [
             {
               model: ProductImage,
