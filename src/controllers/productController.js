@@ -67,10 +67,12 @@ exports.getNewArrival = async (req, res) => {
         {
           model: ProductVariant,
           as: "variants",
+          limit: 1,
         },
         {
           model: ProductColor,
           as: "colors",
+          limit: 1,
           include: [{ model: ProductImage, as: "images" }],
         },
       ],
@@ -96,6 +98,7 @@ exports.getSpecialOffer = async (req, res) => {
         {
           model: ProductVariant,
           as: "variants",
+          limit: 1,
           where: {
             [Op.and]: [
               { mrp: { [Op.gt]: 0 } },
@@ -111,6 +114,7 @@ exports.getSpecialOffer = async (req, res) => {
         {
           model: ProductColor,
           as: "colors",
+          limit: 1,
           include: [{ model: ProductImage, as: "images" }],
         },
       ],
@@ -130,10 +134,12 @@ exports.getTrendingPhone = async (req, res) => {
         {
           model: ProductVariant,
           as: "variants",
+          limit: 1,
         },
         {
           model: ProductColor,
           as: "colors",
+          limit: 1,
           include: [{ model: ProductImage, as: "images" }],
         },
       ],
@@ -236,22 +242,88 @@ exports.getProductList = async (req, res) => {
 
 exports.getProductById = async (req, res) => {
   try {
-    const product = await Product.findByPk(req.params.id, {
+    const { id, productVariantId, productColorId } = req.params;
+
+    const product = await Product.findOne({
+      where: { id },
       include: [
         {
           model: ProductVariant,
           as: "variants",
+          where: { id: productVariantId },
+          required: true, // Ensures INNER JOIN (only returns if variant exists)
         },
         {
           model: ProductColor,
           as: "colors",
-          include: [{ model: ProductImage, as: "images" }],
+          where: { id: productColorId },
+          required: true, // Ensures INNER JOIN (only returns if color exists)
+          include: [
+            {
+              model: ProductImage,
+              as: "images",
+            },
+          ],
         },
       ],
     });
-    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ error: "Product not found with the given variant and color" });
+    }
+
     res.json(product);
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getProductColors = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    const colors = await ProductColor.findAll({
+      where: {
+        productId,
+      },
+      include: [
+        {
+          model: ProductImage,
+          as: "images",
+        },
+      ],
+    });
+    if (!colors) {
+      return res
+        .status(404)
+        .json({ error: "Product not found with the given variant and color" });
+    }
+
+    res.json(colors);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getProductVariants = async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    const variants = await ProductVariant.findAll({
+      where: {
+        productId,
+      },
+    });
+    if (!variants) {
+      return res
+        .status(404)
+        .json({ error: "Product not found with the given variant and color" });
+    }
+
+    res.json(variants);
+  } catch (variants) {
     res.status(500).json({ error: error.message });
   }
 };

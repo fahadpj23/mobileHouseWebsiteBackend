@@ -13,14 +13,18 @@ const {
   getTrendingPhone,
   getProductList,
   getProductByBrand,
+  getProductColors,
+  getProductVariants,
 } = require("../controllers/productController");
 
 router.get("/", getAllProducts);
+router.get("/:productId/colors", getProductColors);
+router.get("/:productId/variants", getProductVariants);
 router.get("/newArrival", getNewArrival);
 router.get("/specialOffer", getSpecialOffer);
 router.get("/trendingPhone", getTrendingPhone);
 router.get("/productsList", getProductList);
-router.get("/:id", getProductById);
+router.get("/:id/:productVariantId/:productColorId", getProductById);
 router.get("/brand/:brand", getProductByBrand);
 router.post("/", uploadProductImages, addProduct);
 router.put("/:productId", uploadProductImages, updateProduct);
