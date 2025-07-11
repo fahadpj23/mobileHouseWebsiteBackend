@@ -369,6 +369,7 @@ exports.addProduct = async (req, res) => {
       processor,
       variants,
       colors,
+      description,
     } = req.body;
 
     // Create product
@@ -387,6 +388,7 @@ exports.addProduct = async (req, res) => {
         battery,
         os,
         processor,
+        description,
       },
       { transaction }
     );
