@@ -299,6 +299,44 @@ exports.getProductById = async (req, res) => {
   }
 };
 
+exports.getProductBySeries = async (req, res) => {
+  try {
+    const { seriesId } = req.params;
+
+    const product = await Product.findAll({
+      where: { seriesId },
+      include: [
+        {
+          model: ProductVariant,
+          as: "variants",
+          required: true,
+        },
+        {
+          model: ProductColor,
+          as: "colors",
+          required: true,
+          include: [
+            {
+              model: ProductImage,
+              as: "images",
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ error: "Product not found with the given variant and color" });
+    }
+
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getProductColors = async (req, res) => {
   try {
     const { productId } = req.params;

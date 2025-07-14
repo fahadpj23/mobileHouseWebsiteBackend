@@ -16,6 +16,7 @@ const {
   getProductColors,
   getProductVariants,
   getProductByIdEdit,
+  getProductBySeries,
 } = require("../controllers/productController");
 
 router.get("/", getAllProducts);
@@ -23,6 +24,7 @@ router.get("/:productId/colors", getProductColors);
 router.get("/:productId/variants", getProductVariants);
 router.get("/newArrivalProduct", getNewArrival);
 router.get("/specialOffer", getSpecialOffer);
+router.get("/series/:seriesId", getProductBySeries);
 router.get("/trendingPhone", getTrendingPhone);
 router.get("/productsList", getProductList);
 router.get("/:id/edit", getProductByIdEdit);
