@@ -9,7 +9,7 @@ const {
   addSeries,
   updateSeries,
   deleteSeries,
-} = require("../controllers/SeriesController");
+} = require("../controllers/seriesController");
 
 router.get("/", getAllSeries);
 router.get("/:id", getSeriesById);
