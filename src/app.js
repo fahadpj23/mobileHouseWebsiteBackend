@@ -21,7 +21,14 @@ app.use(cors());
 //     credentials: true, // If you need to send cookies
 //   })
 // );
-app.use(cors());
+// For development (allow all origins)
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
