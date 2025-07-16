@@ -13,7 +13,7 @@ const userRoutes = require("./routes/userRoutes");
 
 app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+// app.use(cors());
 // app.use(
 //   cors({
 //     origin: "http://localhost:3000",
@@ -26,7 +26,6 @@ app.use(
   cors({
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
