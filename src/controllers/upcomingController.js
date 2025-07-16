@@ -59,7 +59,7 @@ exports.addUpcoming = async (req, res) => {
       images.map((file, index) =>
         db.Upcoming.create({
           seriesId,
-          image: `/uploads/Upcoming/${file.filename}`,
+          image: `/uploads/upcoming/${file.filename}`,
           isMain: index === 0, // Set first image as main by default
         })
       )
