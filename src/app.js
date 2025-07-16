@@ -29,7 +29,7 @@ app.use(
   })
 );
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "src", "uploads")));
 
 app.get("/", (req, res) => {
   res.send("Express.js Server is Running! 🚀");
