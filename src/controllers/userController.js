@@ -66,7 +66,7 @@ exports.register = async (req, res) => {
       refreshToken,
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: error });
   }
 };
 
@@ -104,7 +104,7 @@ exports.login = async (req, res) => {
       refreshToken,
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: error });
   }
 };
 
