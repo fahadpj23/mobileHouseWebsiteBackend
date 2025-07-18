@@ -1,8 +1,8 @@
 module.exports = {
-  HOST: "database-1.chygea84cv0y.eu-north-1.rds.amazonaws.com",
-  USER: "admin",
+  HOST: "database-1.cfe40uka0j0y.ap-south-1.rds.amazonaws.com",
+  USER: "mobileHouse",
   PASSWORD: "FazilFajar159",
-  DB: "mobileHouseDatabase",
+  DB: "mobileHoueDatabase",
   dialect: "mysql",
   port: process.env.DB_PORT || 3306,
   dialectOptions: {
