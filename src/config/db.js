@@ -7,13 +7,6 @@ module.exports = {
   port: process.env.DB_PORT || 3306,
   dialectOptions: {
     connectTimeout: 60000,
-    // ssl:
-    //   process.env.DB_SSL === "true"
-    //     ? {
-    //         require: true,
-    //         rejectUnauthorized: true,
-    //       }
-    //     : false,
   },
   pool: {
     max: 5,
