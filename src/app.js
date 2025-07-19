@@ -70,12 +70,17 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
-);
+const corsOptions = {
+  origin: [
+    "https://glowing-blini-a6c05b.netlify.app",
+    "http://localhost:3000", // for local development
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, // if you need to send cookies
+};
+
+app.use(cors(corsOptions));
 
 // Static files
 app.use("/uploads", express.static(path.join(__dirname, "src", "uploads")));
